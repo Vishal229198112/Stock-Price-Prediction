@@ -16,7 +16,7 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error
 from sklearn.metrics import r2_score
 import matplotlib.pyplot as plt
 
-model = load_model(r'C:\Users\vp190\major1\my_model.keras')
+model = load_model(r'C:\Users\vp190\project_deploy_major\my_model.keras')
 
 
 st.title('Stock Price Predictions')
