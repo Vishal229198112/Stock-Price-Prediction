@@ -16,8 +16,10 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error
 from sklearn.metrics import r2_score
 import matplotlib.pyplot as plt
 
-model = load_model('my_model.keras')
-
+# model = load_model('my_model.keras')
+import os
+model_path = os.path.join(os.path.dirname(__file__), 'my_model.keras')
+model = load_model(model_path)
 
 st.title('Stock Price Predictions')
 st.sidebar.info('Welcome to the Stock Price Prediction App. Choose your options below')
