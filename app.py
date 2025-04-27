@@ -15,8 +15,20 @@ from keras.models import load_model
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 from sklearn.metrics import r2_score
 import matplotlib.pyplot as plt
+import streamlit as st
+from tensorflow.keras.models import load_model
 
-model = load_model("my_model.keras")
+@st.cache_resource
+def load_keras_model(model_path):
+    model = load_model(model_path)
+    return model
+
+model_path = 'my_model.keras'
+model = load_keras_model(model_path)
+
+
+
+# model = load_model("my_model.keras")
 
 
 st.title('Stock Price Predictions')
@@ -70,17 +82,22 @@ def main():
 with open("scaler.pkl", "rb") as f:
     scaler = pickle.load(f)
 
-
 def find_accuracy():
     # --- Data Preparation ---
+    dates = data.index  # Dates are already in the index — use directly!
+
     data_test = data['Close'].values.reshape(-1, 1)
     data_test_scale = scaler.fit_transform(data_test)
 
     x, y = [], []
+    y_dates = []
     for i in range(100, data_test_scale.shape[0]):
         x.append(data_test_scale[i-100:i])
         y.append(data_test_scale[i, 0])
+        y_dates.append(dates[i])  # Pick date directly from index
+
     x, y = np.array(x), np.array(y)
+    y_dates = np.array(y_dates)
 
     # --- Predictions ---
     y_inverse = scaler.inverse_transform(y.reshape(-1, 1))
@@ -89,12 +106,15 @@ def find_accuracy():
 
     # --- Plotting ---
     fig, ax = plt.subplots(figsize=(10, 6))
-    ax.plot(y_predict_inverse, 'r', label='Predicted Price')
-    ax.plot(y_inverse, 'g', label='Original Price')
-    ax.set_xlabel('Time')
+    ax.plot(y_dates, y_predict_inverse, 'r', label='Predicted Price')
+    ax.plot(y_dates, y_inverse, 'g', label='Original Price')
+    ax.set_xlabel('Date')
     ax.set_ylabel('Price')
+    ax.set_title('Original vs Predicted Prices')
     ax.legend()
-    ax.grid(True, linestyle='--', alpha=0.5)  # optional: a light grid
+    ax.grid(True, linestyle='--', alpha=0.5)
+    plt.xticks(rotation=45)
+    fig.autofmt_xdate()
 
     st.pyplot(fig, use_container_width=True)
 
@@ -109,6 +129,7 @@ def find_accuracy():
     st.write(f"**Mean Squared Error (MSE):** {mse:.4f}")
     st.write(f"**Mean Absolute Error (MAE):** {mae:.4f}")
     st.write(f"**R² Score:** {r2:.4f}")
+
 
 
 def tech_indicators(data):
