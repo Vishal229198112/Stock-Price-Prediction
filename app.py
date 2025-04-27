@@ -11,20 +11,21 @@ import numpy as np
 import pickle
 
 from sklearn.metrics import r2_score, mean_absolute_error
-from keras.models import load_model
+
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 from sklearn.metrics import r2_score
 import matplotlib.pyplot as plt
 import streamlit as st
-from tensorflow.keras.models import load_model
+import tensorflow as tf
+from tensorflow import keras
 
-@st.cache_resource
-def load_keras_model(model_path):
-    model = load_model(model_path)
+@st.cache(allow_output_mutation=True)
+def load_model():
+    model=tf.keras.models.load_model('ny_model.keras')
     return model
 
-model_path = 'my_model.keras'
-model = load_keras_model(model_path)
+with st.spinner("Loading Model...."):
+    model=load_model()
 
 
 
